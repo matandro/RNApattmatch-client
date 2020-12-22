@@ -38,13 +38,13 @@ private:
 	UniDirTask * performTask(std::queue<UniDirTask *> &, UniDirTask *);
 	void getInterval(UniDirTask & searchTask,
 			std::vector<LcpInterval> & childIntervals);
-	CompareState compareStr(const char *, unsigned int, unsigned int &,
-			unsigned int, unsigned int &, unsigned int);
-	char getQueryChar(const char *, unsigned int, unsigned int, unsigned int);
+	CompareState compareStr(const char *, std::int64_t, std::int64_t &,
+			std::int64_t, unsigned int &, unsigned int);
+	char getQueryChar(const char *, unsigned int, std::int64_t, std::int64_t);
 	int targetToQuery(int);
 	void stopSearch();
 	void handleMatch(std::queue<UniDirTask *> &, UniDirTask &, char *,
-			unsigned int, unsigned int, LcpInterval &);
+			std::int64_t, unsigned int, LcpInterval &);
 	// sending pointer, thread function
 	void taskRunner(std::queue<UniDirTask *> *, int *, int);
 public:
