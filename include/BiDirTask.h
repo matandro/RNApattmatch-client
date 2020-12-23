@@ -20,11 +20,11 @@ private:
 	int revUnchecked_; // k from algorithm
 public:
 	bool revJob_;
-	BiDirTask(unsigned int, std::int64_t, unsigned int, int, HairpinQuery &,
+	BiDirTask(unsigned int, unsigned int, unsigned int, int, HairpinQuery &,
 			bool);
-	BiDirTask(LcpInterval &, unsigned int, std::int64_t, unsigned int, int,
+	BiDirTask(LcpInterval &, unsigned int, unsigned int, unsigned int, int,
 			HairpinQuery &, bool);
-	BiDirTask(LcpInterval &, unsigned int, std::int64_t, unsigned int, int,
+	BiDirTask(LcpInterval &, unsigned int, unsigned int, unsigned int, int,
 			HairpinQuery &, char *, char *, bool);
 	BiDirTask(const BiDirTask &);
 	BiDirTask & operator=(const BiDirTask & other);
@@ -41,9 +41,9 @@ public:
 	void setDirection(bool isForward);
 	// with opposite direction
 	int getQueryIndex(bool isForward) const;
-	std::int64_t getTargetIndex() const;
+	int getTargetIndex() const;
 	void setQueryIndex(int queryIndex, bool isForward);
-	void setTargetIndex(std::int64_t targetIndex);
+	void setTargetIndex(int targetIndex);
 	char * getGaps(bool isForward);
 	int getGapNo(bool isForward) const;
 	int getTotalGap(bool isForward);

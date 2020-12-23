@@ -7,7 +7,7 @@
 
 #include <LcpInterval.h>
 
-LcpInterval::LcpInterval(std::int64_t s, std::int64_t e) :
+LcpInterval::LcpInterval(int s, int e) :
 		start(s), end(e) {
 }
 

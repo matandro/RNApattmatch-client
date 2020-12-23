@@ -393,7 +393,7 @@ const char * Input::ErrString() {
 	return errorStr_.c_str();
 }
 
-unsigned int Input::getTargetLength() {
+int Input::getTargetLength() {
 	return targetNames_.size();
 }
 

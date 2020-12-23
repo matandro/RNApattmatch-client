@@ -8,14 +8,14 @@
 #include <UniDirTask.h>
 
 UniDirTask::UniDirTask(LcpInterval & interval, unsigned int queryIndex,
-		std::int64_t targetIndex, unsigned int gapNo) :
+		unsigned int targetIndex, unsigned int gapNo) :
 		interval_(interval), queryIndex_(queryIndex), targetIndex_(targetIndex), gapNo_(
 				gapNo), gaps_(0) {
 	gaps_ = new char[gapNo];
 	clearGaps(gaps_, gapNo_);
 }
 
-UniDirTask::UniDirTask(unsigned int queryIndex, std::int64_t targetIndex,
+UniDirTask::UniDirTask(unsigned int queryIndex, unsigned int targetIndex,
 		unsigned int gapNo) :
 		interval_(), queryIndex_(queryIndex), targetIndex_(targetIndex), gapNo_(
 				gapNo), gaps_(0) {
@@ -24,7 +24,7 @@ UniDirTask::UniDirTask(unsigned int queryIndex, std::int64_t targetIndex,
 }
 
 UniDirTask::UniDirTask(LcpInterval & interval, unsigned int queryIndex,
-		std::int64_t targetIndex, unsigned int gapNo, char * gaps) :
+		unsigned int targetIndex, unsigned int gapNo, char * gaps) :
 		interval_(interval), queryIndex_(queryIndex), targetIndex_(targetIndex), gapNo_(
 				gapNo), gaps_(0) {
 	gaps_ = new char[gapNo];

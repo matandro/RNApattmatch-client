@@ -66,7 +66,7 @@ public:
 	bool Initiate(int, const char **);
 	const char * ErrString();
 	static const std::string Usage();
-	unsigned int getTargetLength();
+	int getTargetLength();
 	const std::string & getTargetName(int);
 	const std::string & getTargetSequence(int);
 	const std::string & getQuerySeq();

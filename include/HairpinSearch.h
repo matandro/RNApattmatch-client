@@ -46,16 +46,16 @@ private:
 	BiDirTask * performSearchTask(BiDirTask *, std::queue<BiDirTask *> &);
 	BiDirTask * searchIntervalTask(BiDirTask *, std::queue<BiDirTask*> &);
 	BiDirTask * handleGap(BiDirTask *, std::queue<BiDirTask *> &, bool);
-	BiDirTask * compareInterval(BiDirTask *, std::queue<BiDirTask *> &, std::int64_t);
+	BiDirTask * compareInterval(BiDirTask *, std::queue<BiDirTask *> &, int);
 	int getGapRemaining(BiDirTask &, bool);
 	bool compareLetters(BiDirTask &, bool);
-	bool compareCompletionLetter(BiDirTask &, LcpInterval &, char, bool, std::int64_t);
-	std::int64_t getRelativeTarget(BiDirTask &, bool);
+	bool compareCompletionLetter(BiDirTask &, LcpInterval &, char, bool, int);
+	int getRelativeTarget(BiDirTask &, bool);
 	void compareSingletonInterval(BiDirTask&);
 	void updateGapBack(BiDirTask &, GapBackTrack &);
 	bool checkFinish(BiDirTask &);
 	void taskRunner(std::queue<BiDirTask *> *, int *, int);
-	bool checkOutofBounds(BiDirTask &, bool, std::int64_t);
+	bool checkOutofBounds(BiDirTask &, bool, int);
 	void printInfoTask(const char * , BiDirTask & , bool );
 public:
 	HairpinSearch(Input &, AffixArray &, HairpinQuery &);

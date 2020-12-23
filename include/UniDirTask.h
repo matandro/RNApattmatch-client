@@ -9,7 +9,6 @@
 #define UNIDIRTASK_H_
 
 #include <LcpInterval.h>
-#include <cstdint>
 
 class UniDirTask {
 protected:
@@ -25,12 +24,12 @@ protected:
 public:
 	LcpInterval interval_;
 	unsigned int queryIndex_;
-	std::int64_t targetIndex_;
+	unsigned int targetIndex_;
 	unsigned int gapNo_;
 	char * gaps_;
-	UniDirTask(unsigned int, std::int64_t, unsigned int);
-	UniDirTask(LcpInterval &, unsigned int, std::int64_t, unsigned int);
-	UniDirTask(LcpInterval &, unsigned int, std::int64_t, unsigned int, char *);
+	UniDirTask(unsigned int, unsigned int, unsigned int);
+	UniDirTask(LcpInterval &, unsigned int, unsigned int, unsigned int);
+	UniDirTask(LcpInterval &, unsigned int, unsigned int, unsigned int, char *);
 	UniDirTask(const UniDirTask & other);
 	UniDirTask & operator=(const UniDirTask & other);
 	virtual ~UniDirTask();

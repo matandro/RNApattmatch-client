@@ -95,12 +95,12 @@ void SuffixSearch::taskRunner(std::queue<UniDirTask *> * taskQueue,
 
 UniDirTask * SuffixSearch::performTask(std::queue<UniDirTask *> & queue,
 		UniDirTask * searchTask) {
-	std::int64_t inTargetIndex = searchTask->targetIndex_;
+	unsigned int inTargetIndex = searchTask->targetIndex_;
 	unsigned int inQueryIndex = searchTask->queryIndex_;
 	char * inGaps = new char[input_->getGapNo()];
 	for (int i = 0; i < input_->getGapNo(); ++i)
 		inGaps[i] = searchTask->gaps_[i];
-	const std::int64_t * sa = dc3Algorithm_->getSA();
+	const int * sa = dc3Algorithm_->getSA();
 
 // Retrieving all child intervals
 	std::vector<LcpInterval> intervals;
@@ -110,16 +110,16 @@ UniDirTask * SuffixSearch::performTask(std::queue<UniDirTask *> & queue,
 			intervalIt != intervals.end(); ++intervalIt) {
 
 		unsigned int newQueryIndex = inQueryIndex;
-		std::int64_t newTargetIndex = inTargetIndex;
+		unsigned int newTargetIndex = inTargetIndex;
 
 		// if the interval has more then 1 sequence, get the size of the similar part
 		if (intervalIt->start != intervalIt->end) {
-			std::int64_t lcp = dc3Algorithm_->getLCP(intervalIt->start, intervalIt->end);
+			int lcp = dc3Algorithm_->getLCP(intervalIt->start, intervalIt->end);
 			newTargetIndex = lcp;
 
 			// best case, no gaps yet: location will be fixed by compareStr
 			newQueryIndex = std::min(inQueryIndex + (lcp - inTargetIndex),
-					(std::int64_t)input_->getTotalLength());
+					input_->getTotalLength());
 		} // Only one sequence in interval, does it fit?
 		else {
 			newQueryIndex = input_->getTotalLength();
@@ -142,10 +142,10 @@ UniDirTask * SuffixSearch::performTask(std::queue<UniDirTask *> & queue,
 		}
 
 		std::vector<unsigned int> gapUsageVector;
-		int currentGapIndex = -1;
+		unsigned int currentGapIndex = -1;
 		do {
 			unsigned int currentQueryIndex = inQueryIndex;
-			std::int64_t currentTargetIndex = inTargetIndex;
+			unsigned int currentTargetIndex = inTargetIndex;
 
 			CompareState compareState = CompareState::KEEP_COMPARING;
 			while (compareState == CompareState::KEEP_COMPARING) {
@@ -193,7 +193,7 @@ UniDirTask * SuffixSearch::performTask(std::queue<UniDirTask *> & queue,
  * Adds a task to work queue, if more then max results return false
  */
 void SuffixSearch::handleMatch(std::queue<UniDirTask *> & queue,
-		UniDirTask & searchTask, char * inGaps, std::int64_t targetIndex,
+		UniDirTask & searchTask, char * inGaps, unsigned int targetIndex,
 		unsigned int queryIndex, LcpInterval & interval) {
 	// if we found something we can copy it to he results
 	if (queryIndex == input_->getTotalLength()) {
@@ -227,7 +227,7 @@ void SuffixSearch::handleMatch(std::queue<UniDirTask *> & queue,
  * Compare the Target[tStart, tEnd] to Query[qStart, qEnd] with the given gaps
  */
 SuffixSearch::CompareState SuffixSearch::compareStr(const char * gaps,
-		std::int64_t tLocation, std::int64_t & targetIndex, std::int64_t tEnd,
+		unsigned int tLocation, unsigned int & targetIndex, unsigned int tEnd,
 		unsigned int & queryIndex, unsigned int qEnd) {
 	CompareState result = CompareState::MATCH;
 	for (;
@@ -254,16 +254,16 @@ SuffixSearch::CompareState SuffixSearch::compareStr(const char * gaps,
 
 			// if tEnd in middle of gap and inside target, exit without increasing queryIndex
 			if (targetIndex == tEnd
-					&& (targetIndex + tLocation) < (std::int64_t)target_.length()) {
+					&& (targetIndex + tLocation) < target_.length()) {
 				break;
 			}
 		}
 
 		// not in gap compare character
 		char postMatchChar;
-		std::int64_t targetLocation = targetIndex + tLocation;
+		unsigned int targetLocation = targetIndex + tLocation;
 		if (targetLocation
-				>= (std::int64_t)target_.length()
+				>= target_.length()
 				|| (postMatchChar = getQueryChar(gaps, queryIndex, targetIndex,
 						tLocation)) == 0
 				|| !isFASTAEqual(target_[targetLocation],
@@ -280,7 +280,7 @@ SuffixSearch::CompareState SuffixSearch::compareStr(const char * gaps,
  * assume we are not in a gap
  */
 char SuffixSearch::getQueryChar(const char * gaps, unsigned int queryIndex,
-		std::int64_t targetIndex, std::int64_t targetLocation) {
+		unsigned int targetIndex, unsigned int targetLocation) {
 	char queryChar = input_->getQuerySeq()[queryIndex];
 	int openBracketQueryIndex = input_->getComplamentryIndex(queryIndex, true);
 	if (openBracketQueryIndex != -1) {
@@ -329,10 +329,10 @@ void SuffixSearch::getInterval(UniDirTask & searchTask,
 		}
 		if (gapRemaining == 0) {
 			// no gap left, compare characters
-			std::int64_t targetLocation = dc3Algorithm_->getSA()[it->start]
+			unsigned int targetLocation = dc3Algorithm_->getSA()[it->start]
 					+ searchTask.targetIndex_;
 			char postMatchChar;
-			if (targetLocation >= (std::int64_t)target_.length()
+			if (targetLocation >= target_.length()
 					|| (postMatchChar = getQueryChar(searchTask.gaps_,
 							searchTask.queryIndex_,
 							searchTask.targetIndex_,
@@ -428,18 +428,18 @@ bool SuffixSearch::isFASTAEqual(char t, char q) {
  */
 void SuffixSearch::printResults() {
 	Log & log = Log::getInstance();
-	const std::int64_t * sa = dc3Algorithm_->getSA();
+	const int * sa = dc3Algorithm_->getSA();
 	int queryLength = input_->getTotalLength();
 
 	log << "Results: " << input_->getTargetName(targetNo_) << "\n";
 	for (unsigned int resultIndex = 0; resultIndex < results_.size();
 			++resultIndex) {
 		UniDirTask * currentResult = results_[resultIndex];
-		for (std::int64_t intervalIndex = currentResult->interval_.start;
+		for (int intervalIndex = currentResult->interval_.start;
 				intervalIndex <= currentResult->interval_.end;
 				++intervalIndex) {
 			// pushing index
-			std::int64_t targetIndex = sa[intervalIndex];
+			unsigned int targetIndex = sa[intervalIndex];
 			log << (sa[intervalIndex] + 1) << ";"; // start counting from 1
 			// pushing gap information (for secondary structure alignment)
 			int totalGaps = 0;
@@ -462,12 +462,12 @@ void SuffixSearch::printResults() {
  */
 void SuffixSearch::testPrintResults() {
 	std::cout << "Results: " << std::endl;
-	const std::int64_t * sa = dc3Algorithm_->getSA();
+	const int * sa = dc3Algorithm_->getSA();
 	int resultCounter = 0;
 	std::set<int> test = std::set<int>();
 	for (unsigned int i = 0; i < results_.size(); ++i) {
 		UniDirTask * currentResult = results_[i];
-		for (std::int64_t j = currentResult->interval_.start;
+		for (int j = currentResult->interval_.start;
 				j <= currentResult->interval_.end; ++j) {
 			std::cout << ++resultCounter << ") "
 					<< target_.substr(sa[j], input_->getQuerySeq().length())
