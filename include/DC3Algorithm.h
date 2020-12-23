@@ -43,15 +43,15 @@ private:
 
 #define tget(i) ( (t[(i)/8]&mask[(i)%8]) ? 1 : 0 )
 #define tset(i, b) t[(i)/8]=(b) ? (mask[(i)%8]|t[(i)/8]) : ((~mask[(i)%8])&t[(i)/8])
-#define chr(i) (cs==sizeof(int)?((int*)s)[i]:((unsigned char *)s)[i])
+#define chr(i) (cs==sizeof(std::int64_t)?((std::int64_t*)s)[i]:((unsigned char *)s)[i])
 #define isLMS(i) (i>0 && tget(i) && !tget(i-1))
 
-	void getBuckets(unsigned char *, std::int64_t *, std::int64_t, int, int, bool);
-	void induceSAl(unsigned char *, std::int64_t *, unsigned char *, std::int64_t *, std::int64_t, int,
-			int, bool);
-	void induceSAs(unsigned char *, std::int64_t *, unsigned char *, std::int64_t *, std::int64_t, int,
-			int, bool);
-	void SA_IS(unsigned char *, std::int64_t *, std::int64_t, int, int);
+	void getBuckets(unsigned char *, std::int64_t *, std::int64_t, std::int64_t, std::int64_t, bool);
+	void induceSAl(unsigned char *, std::int64_t *, unsigned char *, std::int64_t *, std::int64_t, std::int64_t,
+			std::int64_t, bool);
+	void induceSAs(unsigned char *, std::int64_t *, unsigned char *, std::int64_t *, std::int64_t, std::int64_t,
+			std::int64_t, bool);
+	void SA_IS(unsigned char *, std::int64_t *, std::int64_t, std::int64_t, std::int64_t);
 	void CalcEnhancments(std::int64_t *);
 	void loadSfa();
 	void saveSfa();

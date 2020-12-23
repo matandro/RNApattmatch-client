@@ -20,14 +20,13 @@ const unsigned char DC3Algorithm::mask[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04,
 		0x02, 0x01 };
 
 // find the start or end of each bucket
-void DC3Algorithm::getBuckets(unsigned char *s, std::int64_t *bkt, std::int64_t n, int K, int cs,
+void DC3Algorithm::getBuckets(unsigned char *s, std::int64_t *bkt, std::int64_t n, std::int64_t K, std::int64_t cs,
 		bool end) {
-	std::int64_t j, sum = 0;
-	int i = 0;
+	std::int64_t i, sum = 0;
 	for (i = 0; i <= K; i++)
 		bkt[i] = 0; // clear all buckets
-	for (j = 0; j < n; j++)
-		bkt[chr(j)]++; // compute the size of each bucket
+	for (i = 0; i < n; i++)
+		bkt[chr(i)]++; // compute the size of each bucket
 	for (i = 0; i <= K; i++) {
 		sum += bkt[i];
 		bkt[i] = end ? sum : sum - bkt[i];
@@ -36,7 +35,7 @@ void DC3Algorithm::getBuckets(unsigned char *s, std::int64_t *bkt, std::int64_t 
 
 // compute SAl
 void DC3Algorithm::induceSAl(unsigned char *t, std::int64_t *SA, unsigned char *s,
-		std::int64_t *bkt, std::int64_t n, int K, int cs, bool end) {
+		std::int64_t *bkt, std::int64_t n, std::int64_t K, std::int64_t cs, bool end) {
 	std::int64_t i, j;
 	getBuckets(s, bkt, n, K, cs, end); // find starts of buckets
 	for (i = 0; i < n; i++) {
@@ -48,11 +47,11 @@ void DC3Algorithm::induceSAl(unsigned char *t, std::int64_t *SA, unsigned char *
 
 // compute SAs
 void DC3Algorithm::induceSAs(unsigned char *t, std::int64_t *SA, unsigned char *s,
-		std::int64_t *bkt, std::int64_t n, int K, int cs, bool end) {
+		std::int64_t *bkt, std::int64_t n, std::int64_t K, std::int64_t cs, bool end) {
 	std::int64_t i, j;
 	getBuckets(s, bkt, n, K, cs, end); // find ends of buckets
 	for (i = n - 1; i >= 0; i--) {
-		j = SA[i] - 1;
+		j = SA[i] - 1;	
 		if (j >= 0 && tget(j))
 			SA[--bkt[chr(j)]] = j;
 	}
@@ -63,7 +62,7 @@ void DC3Algorithm::induceSAs(unsigned char *t, std::int64_t *SA, unsigned char *
 // cs = character size in bytes (1 enough for our alphabet)
 // require s[n-1]=0 (the sentinel!), n>=2
 // use a working space (excluding s and SA) of at most 2.25n+O(1) for a constant alphabet
-void DC3Algorithm::SA_IS(unsigned char *s, std::int64_t *SA, std::int64_t n, int K, int cs) {
+void DC3Algorithm::SA_IS(unsigned char *s, std::int64_t *SA, std::int64_t n, std::int64_t K, std::int64_t cs) {
 	std::int64_t i, j;
 	unsigned char *t = (unsigned char *) malloc(n / 8 + 1); // LS-type array in bits
 	// Classify the type of each character
@@ -117,7 +116,7 @@ void DC3Algorithm::SA_IS(unsigned char *s, std::int64_t *SA, std::int64_t n, int
 	// recurse if names are not yet unique
 	std::int64_t *SA1 = SA, *s1 = SA + n - n1;
 	if (name < n1)
-		SA_IS((unsigned char*) s1, SA1, n1, name - 1, sizeof(int));
+		SA_IS((unsigned char*) s1, SA1, n1, name - 1, sizeof(std::int64_t));
 	else
 		// generate the suffix array of s1 directly
 		for (i = 0; i < n1; i++)

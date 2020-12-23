@@ -14,13 +14,13 @@ int main(int argc, const char ** argv) {
 	bool success;
 	Input input = Input(Input::ProgramInput::SEARCH);
 
+	std::cout << "Reading inputs" << std::endl;
 	success = input.Initiate(argc, argv);
 	if (!success) {
 		std::cerr << input.ErrString() << std::endl;
 		std::cerr << Input::Usage() << std::endl;
 		return -1;
 	}
-
 	Log& log = Log::getInstance();
 	log << "Initialization Successful" << std::endl;
 
