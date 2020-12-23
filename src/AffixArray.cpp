@@ -18,9 +18,9 @@
 AffixArray::AffixArray(const char * word, Input & input, int targetNo) :
 		suffixArray_(word, false, input, targetNo), revPrefixArray_(word, true,
 				input, targetNo), input_(input), targetNo_(targetNo) {
-	aflkF_ = new int[suffixArray_.getWordLength()];
-	aflkR_ = new int[suffixArray_.getWordLength()];
-	for (int i = 0; i < suffixArray_.getWordLength(); ++i) {
+	aflkF_ = new std::int64_t[suffixArray_.getWordLength()];
+	aflkR_ = new std::int64_t[suffixArray_.getWordLength()];
+	for (std::int64_t i = 0; i < suffixArray_.getWordLength(); ++i) {
 		aflkF_[i] = -2;
 		aflkR_[i] = -2;
 	}
@@ -66,9 +66,9 @@ void AffixArray::saveAflk() {
 	std::ofstream aflkFile;
 	aflkFile.open(getAfklFileName(),
 			std::ios::out | std::ios::trunc | std::ios::binary);
-	for (int i = 0; i < suffixArray_.getWordLength(); ++i) {
-		aflkFile.write((const char *) (&(aflkR_[i])), sizeof(int));
-		aflkFile.write((const char *) (&(aflkF_[i])), sizeof(int));
+	for (std::int64_t i = 0; i < suffixArray_.getWordLength(); ++i) {
+		aflkFile.write((const char *) (&(aflkR_[i])), sizeof(std::int64_t));
+		aflkFile.write((const char *) (&(aflkF_[i])), sizeof(std::int64_t));
 	}
 	aflkFile.close();
 }
@@ -77,10 +77,10 @@ void AffixArray::loadAflk() {
 	std::ifstream aflkFile;
 	aflkFile.open(getAfklFileName(), std::ios::binary);
 	std::string line;
-	int i = 0;
+	std::int64_t i = 0;
 	while (!aflkFile.eof()) {
-		aflkFile.read((char *) (&(aflkR_[i])), sizeof(int));
-		aflkFile.read((char *) (&(aflkF_[i])), sizeof(int));
+		aflkFile.read((char *) (&(aflkR_[i])), sizeof(std::int64_t));
+		aflkFile.read((char *) (&(aflkF_[i])), sizeof(std::int64_t));
 		++i;
 	}
 	aflkFile.close();
@@ -108,7 +108,7 @@ void AffixArray::calculateAflk() {
 }
 
 void AffixArray::singleAflk(DC3Algorithm * forword, DC3Algorithm * reverse,
-		int * fAFlk, int * rAflk) {
+		std::int64_t * fAFlk, std::int64_t * rAflk) {
 	std::queue<LcpInterval> workAhead;
 	workAhead.push(LcpInterval(0, forword->getWordLength()));
 	while (!workAhead.empty()) {
@@ -130,9 +130,9 @@ void AffixArray::singleAflk(DC3Algorithm * forword, DC3Algorithm * reverse,
 }
 
 bool AffixArray::searchInReverse(DC3Algorithm & forword, DC3Algorithm & reverse,
-		LcpInterval & forwordInterval, int * fAFlk, int * rAflk) {
-	int lcp = forword.getLCP(forwordInterval.start, forwordInterval.end);
-	int searchIndex = lcp;
+		LcpInterval & forwordInterval, std::int64_t * fAFlk, std::int64_t * rAflk) {
+	std::int64_t lcp = forword.getLCP(forwordInterval.start, forwordInterval.end);
+	std::int64_t searchIndex = lcp;
 	LcpInterval reverseInterval(0, reverse.getWordLength());
 	while (searchIndex > 0 && !reverseInterval.isEmpty()) {
 		std::vector<LcpInterval> intervals;
@@ -141,8 +141,8 @@ bool AffixArray::searchInReverse(DC3Algorithm & forword, DC3Algorithm & reverse,
 		reverseInterval.setEmpty();
 		for (std::vector<LcpInterval>::iterator it = intervals.begin();
 				it != intervals.end(); ++it) {
-			int localIndex = searchIndex;
-			int reverseLcp = reverse.getLCP(it->start, it->end);
+			std::int64_t localIndex = searchIndex;
+			std::int64_t reverseLcp = reverse.getLCP(it->start, it->end);
 			// compare as many as possible
 			bool fit = !(it->start == it->end);
 			while (localIndex > 0 && lcp - localIndex < reverseLcp && fit) {
@@ -179,8 +179,8 @@ bool AffixArray::searchInReverse(DC3Algorithm & forword, DC3Algorithm & reverse,
 	return false;
 }
 
-int AffixArray::home(int i, int j, DC3Algorithm & array) {
-	int homeVar;
+std::int64_t AffixArray::home(std::int64_t i, std::int64_t j, DC3Algorithm & array) {
+	std::int64_t homeVar;
 	if (array.getLCP()[i] >= array.getLCP()[j + 1]) {
 		homeVar = i;
 	} else {
@@ -191,7 +191,7 @@ int AffixArray::home(int i, int j, DC3Algorithm & array) {
 
 void AffixArray::printArrayTest() {
 	std::cout << "i | suff | lcpf | aflkf | wSuff" << std::endl;
-	for (int i = 0; i < suffixArray_.getWordLength(); ++i) {
+	for (std::int64_t i = 0; i < suffixArray_.getWordLength(); ++i) {
 		std::cout << i << " | ";
 		std::cout << suffixArray_.getSA()[i] << " | ";
 		std::cout << suffixArray_.getLCP()[i] << " | ";
@@ -200,12 +200,12 @@ void AffixArray::printArrayTest() {
 		std::cout << std::endl;
 	}
 	std::cout << "i | sufr | lcpr | aflkr | wSufr" << std::endl;
-	for (int i = 0; i < revPrefixArray_.getWordLength(); ++i) {
+	for (std::int64_t i = 0; i < revPrefixArray_.getWordLength(); ++i) {
 		std::cout << i << " | ";
 		std::cout << revPrefixArray_.getSA()[i] << " | ";
 		std::cout << revPrefixArray_.getLCP()[i] << " | ";
 		std::cout << aflkR_[i] << " | ";
-		for (int j = revPrefixArray_.getWordLength() - 2;
+		for (std::int64_t j = revPrefixArray_.getWordLength() - 2;
 				j >= revPrefixArray_.getSA()[i]; --j) {
 			std::cout << revPrefixArray_.getWord().c_str()[j];
 		}
@@ -214,7 +214,7 @@ void AffixArray::printArrayTest() {
 	}
 }
 
-unsigned int AffixArray::getTargetLength() {
+std::int64_t AffixArray::getTargetLength() {
 	return suffixArray_.getWordLength();
 }
 
@@ -239,8 +239,8 @@ void AffixArray::getChildIntervals(std::vector<LcpInterval> & childIntervals,
 	 */
 }
 
-int AffixArray::getIntervalLcp(LcpInterval & parentInterval, bool isForward) {
-	int lcp = -1;
+std::int64_t AffixArray::getIntervalLcp(LcpInterval & parentInterval, bool isForward) {
+	std::int64_t lcp = -1;
 	if (isForward)
 		lcp = suffixArray_.getLCP(parentInterval.start, parentInterval.end);
 	else
@@ -248,8 +248,8 @@ int AffixArray::getIntervalLcp(LcpInterval & parentInterval, bool isForward) {
 	return lcp;
 }
 
-bool AffixArray::isOutOfBound(int targetIndex, int arrayIndex, bool isForward) {
-	unsigned int targetLocation = targetIndex;
+bool AffixArray::isOutOfBound(std::int64_t targetIndex, std::int64_t arrayIndex, bool isForward) {
+	std::int64_t targetLocation = targetIndex;
 	if (isForward)
 		targetLocation += suffixArray_.getSA()[arrayIndex];
 	else
@@ -260,14 +260,14 @@ bool AffixArray::isOutOfBound(int targetIndex, int arrayIndex, bool isForward) {
 /**
 
  */
-int AffixArray::getIntervalsIndex(int arrayIndex, bool isForward) {
+std::int64_t AffixArray::getIntervalsIndex(std::int64_t arrayIndex, bool isForward) {
 	if (isForward)
 		return suffixArray_.getSA()[arrayIndex];
 	else
 		return revPrefixArray_.getSA()[arrayIndex];
 }
 
-char AffixArray::getTargetChar(int targetoffset, int arrayIndex,
+char AffixArray::getTargetChar(std::int64_t targetoffset, std::int64_t arrayIndex,
 		bool isForward) {
 	char result;
 	if (isForward)
@@ -281,10 +281,10 @@ char AffixArray::getTargetChar(int targetoffset, int arrayIndex,
 
 LcpInterval AffixArray::getReversedInterval(LcpInterval & forwordInterval,
 		bool isForward) {
-	int start;
-	int end;
-	int homeVar;
-	int size = forwordInterval.end - forwordInterval.start;
+	std::int64_t start;
+	std::int64_t end;
+	std::int64_t homeVar;
+	std::int64_t size = forwordInterval.end - forwordInterval.start;
 	if (isForward) {
 		homeVar = home(forwordInterval.start, forwordInterval.end,
 				suffixArray_);

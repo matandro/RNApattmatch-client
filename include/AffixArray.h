@@ -16,31 +16,31 @@ class AffixArray {
 private:
 	DC3Algorithm suffixArray_;
 	DC3Algorithm revPrefixArray_;
-	int * aflkF_;
-	int * aflkR_;
+	std::int64_t * aflkF_;
+	std::int64_t * aflkR_;
 	Input & input_;
 	int targetNo_;
 
 	void calculateAflk();
 	void loadAflk();
-	int home(int, int, DC3Algorithm &);
-	bool searchInReverse(DC3Algorithm &, DC3Algorithm &, LcpInterval &, int *,
-			int *);
+	std::int64_t home(std::int64_t, std::int64_t, DC3Algorithm &);
+	bool searchInReverse(DC3Algorithm &, DC3Algorithm &, LcpInterval &, std::int64_t *,
+			std::int64_t *);
 	std::string getAfklFileName();
 	void singleAflk(DC3Algorithm * forword, DC3Algorithm * reverse,
-			int * fAFlk, int * rAflk);
+			std::int64_t * fAFlk, std::int64_t * rAflk);
 public:
 	AffixArray(const char *, Input &, int targetNo);
 	double RunAlgorithm();
 	virtual ~AffixArray();
 	void printArrayTest();
-	unsigned int getTargetLength();
+	std::int64_t getTargetLength();
 	void getChildIntervals(std::vector<LcpInterval> &,
 			LcpInterval & parentInterval, bool);
-	int getIntervalLcp(LcpInterval &, bool);
-	bool isOutOfBound(int targetIndex, int suffixIndex, bool isForward);
-	char getTargetChar(int targetIndex, int arrayIndex, bool isForward);
-	int getIntervalsIndex(int arrayIndex, bool isForward);
+	std::int64_t getIntervalLcp(LcpInterval &, bool);
+	bool isOutOfBound(std::int64_t targetIndex, std::int64_t suffixIndex, bool isForward);
+	char getTargetChar(std::int64_t targetIndex, std::int64_t arrayIndex, bool isForward);
+	std::int64_t getIntervalsIndex(std::int64_t arrayIndex, bool isForward);
 	LcpInterval getReversedInterval(LcpInterval & forwordInterval,
 			bool isForward);
 	const std::string & getWord() {

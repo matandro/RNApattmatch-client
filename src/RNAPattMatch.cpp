@@ -24,7 +24,7 @@ int main(int argc, const char ** argv) {
 	Log& log = Log::getInstance();
 	log << "Initialization Successful" << std::endl;
 
-	for (int i = 0; i < input.getTargetLength(); ++i) {
+	for (unsigned int i = 0; i < input.getTargetLength(); ++i) {
 		// START AFFIX ARRAY WITH FULL AFFIX SEARCH
 		log << "Starting affix array construction on target " << (i + 1)
 				<< std::endl;

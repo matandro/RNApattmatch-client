@@ -8,11 +8,13 @@
 #ifndef LCPINTERVAL_H_
 #define LCPINTERVAL_H_
 
+#include <cstdint>
+
 class LcpInterval {
 public:
-	int start;
-	int end;
-	LcpInterval(int , int );
+	std::int64_t start;
+	std::int64_t end;
+	LcpInterval(std::int64_t , std::int64_t );
 	LcpInterval();
 	LcpInterval(const LcpInterval & other);
 	bool isEmpty () const;
