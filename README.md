@@ -1,13 +1,12 @@
-RNAPattMatch V1.0
------------------
+#RNAPattMatch V1.1
 
 This software uses the GNU General Public License (See gpl.txt) supported by the Free Software Foundation.
 
 This package was build to run the core algorithm for the RNAPattMatch server.
 This can be found at: http://www.cs.bgu.ac.il/rnapattmatch/
 
-Building
---------
+## Building
+
 To build this software:
 $make
 
@@ -16,13 +15,13 @@ The package exists in many of the large linux distrecutions.
 On ubuntu you can use:
 $sudo apt-get install libboost-all-dev
 
-Running
--------
-The package contains 2 executables:
+## Running
 
+The package contains 2 executables:
 RNAPattMatch:
 This software is used to search for an RNA sequence / structure pattern in a target sequence file.
 
+```shell
 Usage: RNAPattMatch [options] <Query sequence> <Query structure> <Target sequence file>
 <Query sequence> - A string of fasta sequence representation (as found in http://en.wikipedia.org/wiki/FASTA_format#Sequence_representation) without 'X' or '-'. This will represent the RNA sequence pattern you are searching for.
 
@@ -39,20 +38,25 @@ options include:
 	-s [file prefix] - save data structures to file
 			 * this option will cause a full calculation of the affix array and will take a while
 	-l [file prefix] - load data structure from file
+```
 
-Example:
-RNAPattMatch NNNN[2]TA[6]NNN[2]ATNNGG[2]NNN[5]GTNTCTAC[3]NNNNN[3]CCNNNAA[3]NNNNN[5]NNNN '(((([2]..[6]((([2]......[2])))[5]........[3]((((([3].......[3])))))[5]))))' Bacillus_subtilis.fna
+#### Example:
+
+`RNAPattMatch NNNN[2]TA[6]NNN[2]ATNNGG[2]NNN[5]GTNTCTAC[3]NNNNN[3]CCNNNAA[3]NNNNN[5]NNNN '(((([2]..[6]((([2]......[2])))[5]........[3]((((([3].......[3])))))[5]))))' Bacillus_subtilis.fna`
 notice that the gaps mentioned in the pattern are aligned between sequence and structure, this must happen for every gap inserted.
 
-RNAdsBuilder:
+### RNAdsBuilder:
 This software is used to build and save the neccesery data structures for a future search using the -l option for RNAPattMatch. You can perform a search with RNAPattMatch without using this program.
 
+```shell
 Usage: RNAdsBuilder <output target data prefix> <Target sequence file>
 <Output target data prefix> - A string that will be the prefix to all output file names, same as [file prefix] from the -l and -s options for RNAPattMatch. (example below)
 
 <Target sequence file> - A file containing a DNA / RNA sequence that the data structures will be built for. The file should be in FASTA format, can inlcude multiple targets, with only A,C,G,U or T supported. white spaces are ignored. 
+```
 
-Example:
+#### Example:
+
 RNAdsBuilder Bacillus_subtilis Bacillus_subtilis.fna
 
 Running the following line will create 3 files for every target in the target file:
