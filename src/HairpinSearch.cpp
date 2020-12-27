@@ -34,7 +34,7 @@ void HairpinSearch::printInfoTask(const char * premsg, BiDirTask & printTask,
 		char direction = printTask.getIsForward() ? 'F' : 'R';
 		if (printTask.interval_.end - printTask.interval_.start < 5) {
 			std::cout << premsg << "indexes " << direction << " [";
-			for (int i = printTask.interval_.start;
+			for (std::int64_t i = printTask.interval_.start;
 					i <= printTask.interval_.end; ++i) {
 				std::cout
 						<< affixArray_.getIntervalsIndex(i,
@@ -135,7 +135,7 @@ bool HairpinSearch::search() {
 void HairpinSearch::taskRunner(std::queue<BiDirTask *> * taskQueue,
 		int * workingThreads, int id) {
 	BiDirTask * currentTask = NULL;
-	int taskCounter = 0;
+	unsigned int taskCounter = 0;
 	boost::mutex::scoped_lock lock(queueMutex_, boost::defer_lock);
 	while (keepGoing_ == true) {
 		lock.lock();
@@ -516,8 +516,8 @@ void HairpinSearch::compareSingletonInterval(BiDirTask & singeltonTask) {
 }
 
 bool HairpinSearch::checkOutofBounds(BiDirTask & singeltonTask,
-		bool originalForward, int offset) {
-	int targetIndex = affixArray_.getIntervalsIndex(
+		bool originalForward, std::int64_t offset) {
+	std::int64_t targetIndex = affixArray_.getIntervalsIndex(
 			singeltonTask.interval_.start, originalForward);
 	if (originalForward == singeltonTask.getIsForward()) {
 		return ((unsigned) targetIndex
@@ -538,7 +538,7 @@ void HairpinSearch::updateGapBack(BiDirTask & singeltonTask,
 	singeltonTask.setRevQueryIndex(gbt.queryRevIndex);
 }
 
-int HairpinSearch::getRelativeTarget(BiDirTask & singletonTask,
+std::int64_t HairpinSearch::getRelativeTarget(BiDirTask & singletonTask,
 		bool originalDirection) {
 	if (singletonTask.getIsForward() == originalDirection) {
 		return singletonTask.getTargetIndex();
@@ -561,7 +561,7 @@ BiDirTask * HairpinSearch::searchIntervalTask(BiDirTask * intervalTask,
 		intervalTask = 0;
 	} else {
 		// Compare 1 and create continue tasks
-		int lcp = affixArray_.getIntervalLcp(intervalTask->interval_,
+		std::int64_t lcp = affixArray_.getIntervalLcp(intervalTask->interval_,
 				intervalTask->getIsForward());
 		bool isForwardBefore = intervalTask->getIsForward();
 		while (intervalTask != NULL
@@ -582,7 +582,7 @@ BiDirTask * HairpinSearch::searchIntervalTask(BiDirTask * intervalTask,
  * compares a single interval for 1 charecter
  */
 BiDirTask * HairpinSearch::compareInterval(BiDirTask * intervalTask,
-		std::queue<BiDirTask *> & workQueue, int forwardLcp) {
+		std::queue<BiDirTask *> & workQueue, std::int64_t forwardLcp) {
 	// init gaps (if needed) and push over them (if reached the end, return)
 	intervalTask = handleGap(intervalTask, workQueue,
 			intervalTask->getIsForward());
@@ -626,7 +626,7 @@ BiDirTask * HairpinSearch::compareInterval(BiDirTask * intervalTask,
 				!intervalTask->getIsForward())[intervalTask->getRevQueryIndex()];
 		LcpInterval reverseInterval = affixArray_.getReversedInterval(
 				intervalTask->interval_, intervalTask->getIsForward());
-		int reverseLcp = affixArray_.getIntervalLcp(reverseInterval,
+		std::int64_t reverseLcp = affixArray_.getIntervalLcp(reverseInterval,
 				!intervalTask->getIsForward());
 		int gapRemaining = 0;
 		if (reverseGap != NULL
@@ -787,7 +787,7 @@ BiDirTask * HairpinSearch::compareInterval(BiDirTask * intervalTask,
 
 bool HairpinSearch::compareCompletionLetter(BiDirTask & intervalTask,
 		LcpInterval & interval, char complatorTarget, bool intervalDircetion,
-		int targetOffset) {
+		std::int64_t targetOffset) {
 	if (affixArray_.getIntervalsIndex(interval.start, intervalDircetion)
 			+ targetOffset >= (signed) affixArray_.getTargetLength()) {
 		return false;
@@ -805,7 +805,7 @@ bool HairpinSearch::compareCompletionLetter(BiDirTask & intervalTask,
 			<< targetOffset << "] = " << reverseTargetChar
 			<< " At reverse interval: [" << interval.start << ","
 			<< interval.end << "] (" << intervalDircetion << ") [";
-	for (int i = interval.start; i <= interval.end; ++i) {
+	for (std::int64_t i = interval.start; i <= interval.end; ++i) {
 		std::cout << affixArray_.getIntervalsIndex(i, intervalDircetion);
 		if (i < interval.end)
 			std::cout << ",";
@@ -902,7 +902,7 @@ void HairpinSearch::printResults() {
 	for (unsigned int resultIndex = 0; resultIndex < results_.size();
 			++resultIndex) {
 		BiDirTask * currentResult = results_[resultIndex];
-		for (int intervalIndex = currentResult->interval_.start;
+		for (std::int64_t intervalIndex = currentResult->interval_.start;
 				intervalIndex <= currentResult->interval_.end;
 				++intervalIndex) {
 #ifdef DEBUG
@@ -915,7 +915,7 @@ void HairpinSearch::printResults() {
 					<< std::endl;
 #endif
 			// pushing index
-			int targetIndex = affixArray_.getIntervalsIndex(intervalIndex,
+			std::int64_t targetIndex = affixArray_.getIntervalsIndex(intervalIndex,
 					currentResult->getIsForward());
 			targetIndex += currentResult->getRevUnChecked();
 			if (!currentResult->getIsForward()) {

@@ -7,6 +7,7 @@
 
 #include <DC3Algorithm.h>
 
+#include <cstdint>
 #include <ctime>
 #include <string.h>
 #include <stdlib.h>
@@ -19,9 +20,9 @@ const unsigned char DC3Algorithm::mask[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04,
 		0x02, 0x01 };
 
 // find the start or end of each bucket
-void DC3Algorithm::getBuckets(unsigned char *s, int *bkt, int n, int K, int cs,
+void DC3Algorithm::getBuckets(unsigned char *s, std::int64_t *bkt, std::int64_t n, std::int64_t K, std::int64_t cs,
 		bool end) {
-	int i, sum = 0;
+	std::int64_t i, sum = 0;
 	for (i = 0; i <= K; i++)
 		bkt[i] = 0; // clear all buckets
 	for (i = 0; i < n; i++)
@@ -33,9 +34,9 @@ void DC3Algorithm::getBuckets(unsigned char *s, int *bkt, int n, int K, int cs,
 }
 
 // compute SAl
-void DC3Algorithm::induceSAl(unsigned char *t, int *SA, unsigned char *s,
-		int *bkt, int n, int K, int cs, bool end) {
-	int i, j;
+void DC3Algorithm::induceSAl(unsigned char *t, std::int64_t *SA, unsigned char *s,
+		std::int64_t *bkt, std::int64_t n, std::int64_t K, std::int64_t cs, bool end) {
+	std::int64_t i, j;
 	getBuckets(s, bkt, n, K, cs, end); // find starts of buckets
 	for (i = 0; i < n; i++) {
 		j = SA[i] - 1;
@@ -45,12 +46,12 @@ void DC3Algorithm::induceSAl(unsigned char *t, int *SA, unsigned char *s,
 }
 
 // compute SAs
-void DC3Algorithm::induceSAs(unsigned char *t, int *SA, unsigned char *s,
-		int *bkt, int n, int K, int cs, bool end) {
-	int i, j;
+void DC3Algorithm::induceSAs(unsigned char *t, std::int64_t *SA, unsigned char *s,
+		std::int64_t *bkt, std::int64_t n, std::int64_t K, std::int64_t cs, bool end) {
+	std::int64_t i, j;
 	getBuckets(s, bkt, n, K, cs, end); // find ends of buckets
 	for (i = n - 1; i >= 0; i--) {
-		j = SA[i] - 1;
+		j = SA[i] - 1;	
 		if (j >= 0 && tget(j))
 			SA[--bkt[chr(j)]] = j;
 	}
@@ -61,8 +62,8 @@ void DC3Algorithm::induceSAs(unsigned char *t, int *SA, unsigned char *s,
 // cs = character size in bytes (1 enough for our alphabet)
 // require s[n-1]=0 (the sentinel!), n>=2
 // use a working space (excluding s and SA) of at most 2.25n+O(1) for a constant alphabet
-void DC3Algorithm::SA_IS(unsigned char *s, int *SA, int n, int K, int cs) {
-	int i, j;
+void DC3Algorithm::SA_IS(unsigned char *s, std::int64_t *SA, std::int64_t n, std::int64_t K, std::int64_t cs) {
+	std::int64_t i, j;
 	unsigned char *t = (unsigned char *) malloc(n / 8 + 1); // LS-type array in bits
 	// Classify the type of each character
 	tset(n - 2, 0);
@@ -71,7 +72,7 @@ void DC3Algorithm::SA_IS(unsigned char *s, int *SA, int n, int K, int cs) {
 		tset(i, (chr(i)<chr(i+1) || (chr(i)==chr(i+1) && tget(i+1)==1))?1:0);
 	// stage 1: reduce the problem by at least 1/2
 	// sort all the S-substrings
-	int *bkt = (int *) malloc(sizeof(int) * (K + 1)); // bucket array
+	std::int64_t *bkt = (std::int64_t *) malloc(sizeof(std::int64_t) * (K + 1)); // bucket array
 	getBuckets(s, bkt, n, K, cs, true); // find ends of buckets
 	for (i = 0; i < n; i++)
 		SA[i] = -1;
@@ -83,18 +84,18 @@ void DC3Algorithm::SA_IS(unsigned char *s, int *SA, int n, int K, int cs) {
 	free(bkt);
 	// compact all the sorted substrings into the first n1 items of SA
 	// 2*n1 must be not larger than n (provable)
-	int n1 = 0;
+	std::int64_t n1 = 0;
 	for (i = 0; i < n; i++)
 		if (isLMS(SA[i]))
 			SA[n1++] = SA[i];
 	// find the lexicographic names of all substrings
 	for (i = n1; i < n; i++)
 		SA[i] = -1; // init the name array buffer
-	int name = 0, prev = -1;
+	std::int64_t name = 0, prev = -1;
 	for (i = 0; i < n1; i++) {
-		int pos = SA[i];
+		std::int64_t pos = SA[i];
 		bool diff = false;
-		for (int d = 0; d < n; d++)
+		for (std::int64_t d = 0; d < n; d++)
 			if (prev
 					== -1|| chr(pos+d) != chr(prev+d) || tget(pos+d) != tget(prev+d)) {
 				diff = true;
@@ -113,15 +114,15 @@ void DC3Algorithm::SA_IS(unsigned char *s, int *SA, int n, int K, int cs) {
 			SA[j--] = SA[i];
 	// stage 2: solve the reduced problem
 	// recurse if names are not yet unique
-	int *SA1 = SA, *s1 = SA + n - n1;
+	std::int64_t *SA1 = SA, *s1 = SA + n - n1;
 	if (name < n1)
-		SA_IS((unsigned char*) s1, SA1, n1, name - 1, sizeof(int));
+		SA_IS((unsigned char*) s1, SA1, n1, name - 1, sizeof(std::int64_t));
 	else
 		// generate the suffix array of s1 directly
 		for (i = 0; i < n1; i++)
 			SA1[s1[i]] = i;
 	// stage 3: induce the result for the original problem
-	bkt = (int *) malloc(sizeof(int) * (K + 1)); // bucket array
+	bkt = (std::int64_t *) malloc(sizeof(std::int64_t) * (K + 1)); // bucket array
 	// put all left-most S characters into their buckets
 	getBuckets(s, bkt, n, K, cs, true); // find ends of buckets
 	for (i = 1, j = 0; i < n; i++)
@@ -142,16 +143,16 @@ void DC3Algorithm::SA_IS(unsigned char *s, int *SA, int n, int K, int cs) {
 	free(t);
 }
 
-void DC3Algorithm::CalcEnhancments(int * isa) {
+void DC3Algorithm::CalcEnhancments(std::int64_t * isa) {
 	// Calculate LCP and BW
-	for (int i = 0, h = 0; i < wordLength_; ++i) {
+	for (std::int64_t i = 0, h = 0; i < wordLength_; ++i) {
 #ifdef BW_ARRAY
 		if (sa_[i] != 0) {
 			bwt_[i] = word_[sa_[i] - 1];
 		}
 #endif
 		if (isa[i] < wordLength_ - 1) {
-			for (int j = sa_[isa[i] + 1]; word_[i + h] == word_[j + h]; ++h)
+			for (std::int64_t j = sa_[isa[i] + 1]; word_[i + h] == word_[j + h]; ++h)
 				;
 			lcp_[isa[i] + 1] = h;
 			if (h > 0)
@@ -160,10 +161,10 @@ void DC3Algorithm::CalcEnhancments(int * isa) {
 	}
 	lcp_[0] = 0;
 	// construct child table of lcp intervals
-	std::stack<int> supportQ = std::stack<int>();
+	std::stack<std::int64_t> supportQ = std::stack<std::int64_t>();
 	supportQ.push(0);
-	int lastIndex = -1;
-	for (int i = 1; i < wordLength_; ++i) {
+	std::int64_t lastIndex = -1;
+	for (std::int64_t i = 1; i < wordLength_; ++i) {
 		while (lcp_[i] < lcp_[supportQ.top()]) {
 			lastIndex = supportQ.top();
 			supportQ.pop();
@@ -178,10 +179,10 @@ void DC3Algorithm::CalcEnhancments(int * isa) {
 		}
 		supportQ.push(i);
 	}
-	supportQ = std::stack<int>();
+	supportQ = std::stack<std::int64_t>();
 	supportQ.push(0);
 	lastIndex = -1;
-	for (int i = 1; i < wordLength_; ++i) {
+	for (std::int64_t i = 1; i < wordLength_; ++i) {
 		while (lcp_[i] < lcp_[supportQ.top()]) {
 			supportQ.pop();
 		}
@@ -210,10 +211,10 @@ void DC3Algorithm::loadSfa() {
 	std::ifstream sfaFile;
 	sfaFile.open(getSfaFileName(), std::ifstream::binary);
 	std::string line;
-	int i = 0;
+	std::int64_t i = 0;
 	while (!sfaFile.eof()) {
-		sfaFile.read((char *) (&(sa_[i])), sizeof(int));
-		sfaFile.read((char *) (&(lcp_[i])), sizeof(int));
+		sfaFile.read((char *) (&(sa_[i])), sizeof(std::int64_t));
+		sfaFile.read((char *) (&(lcp_[i])), sizeof(std::int64_t));
 		sfaFile.read((char *) (&(cld_[i])), sizeof(LcpChl));
 		++i;
 	}
@@ -224,9 +225,9 @@ void DC3Algorithm::saveSfa() {
 	std::ofstream sfaFile;
 	sfaFile.open(getSfaFileName(),
 			std::ios::out | std::ios::trunc | std::ios::binary);
-	for (int i = 0; i < getWordLength(); ++i) {
-		sfaFile.write((const char *) (&(sa_[i])), sizeof(int));
-		sfaFile.write((const char *) (&(lcp_[i])), sizeof(int));
+	for (std::int64_t i = 0; i < getWordLength(); ++i) {
+		sfaFile.write((const char *) (&(sa_[i])), sizeof(std::int64_t));
+		sfaFile.write((const char *) (&(lcp_[i])), sizeof(std::int64_t));
 		sfaFile.write((const char *) (&(cld_[i])), sizeof(LcpChl));
 	}
 	sfaFile.close();
@@ -246,8 +247,8 @@ double DC3Algorithm::RunAlgorithm() {
 		sa_++;
 		saPushed_ = true;
 		sa_[wordLength_] = wordLength_;
-		int * isa_ = new int[wordLength_];
-		for (int i = 0; i < wordLength_; i++)
+		std::int64_t * isa_ = new std::int64_t[wordLength_];
+		for (std::int64_t i = 0; i < wordLength_; i++)
 			isa_[sa_[i]] = i;
 		CalcEnhancments(isa_);
 		delete[] isa_;
@@ -274,13 +275,13 @@ DC3Algorithm::DC3Algorithm(const char * word, bool reverse, Input & input,
 	}
 	word_ += 255;
 	wordLength_ = word_.size();
-	sa_ = new int[wordLength_ + 1];
-	lcp_ = new int[wordLength_];
+	sa_ = new std::int64_t[wordLength_ + 1];
+	lcp_ = new std::int64_t[wordLength_];
 #ifdef BW_ARRAY
 	bwt_ = new char[wordLength_];
 #endif
 	cld_ = new LcpChl[wordLength_];
-	for (int i = 0; i < wordLength_; ++i) {
+	for (std::int64_t i = 0; i < wordLength_; ++i) {
 		sa_[i] = 0;
 		lcp_[i] = 0;
 #ifdef BW_ARRAY
@@ -305,25 +306,25 @@ DC3Algorithm::~DC3Algorithm() {
 #endif
 }
 
-const int * DC3Algorithm::getSA() {
+const std::int64_t * DC3Algorithm::getSA() {
 	return sa_;
 }
-const int * DC3Algorithm::getLCP() {
+const std::int64_t * DC3Algorithm::getLCP() {
 	return lcp_;
 }
 
-int DC3Algorithm::getWordLength() {
+std::int64_t DC3Algorithm::getWordLength() {
 	// return length without $ at the end
 	return wordLength_ - 1;
 }
 
 void DC3Algorithm::getChildIntervals(std::vector<LcpInterval> & childIntervals,
-		int i, int j) {
-	int i1, i2;
+		std::int64_t i, std::int64_t j) {
+	std::int64_t i1, i2;
 	childIntervals.clear();
 
 	if (j == getWordLength() && i == 0) {
-		int next = i;
+		std::int64_t next = i;
 		while (cld_[i].next != -1) {
 			next = cld_[i].next;
 			childIntervals.push_back(LcpInterval(i, next - 1));
@@ -344,7 +345,7 @@ void DC3Algorithm::getChildIntervals(std::vector<LcpInterval> & childIntervals,
 	}
 }
 
-int DC3Algorithm::getLCP(int i, int j) {
+std::int64_t DC3Algorithm::getLCP(std::int64_t i, std::int64_t j) {
 	if (i == 0 && j == getWordLength())
 		return 0;
 	else if (i < cld_[j + 1].up && cld_[j + 1].up <= j)
@@ -356,7 +357,7 @@ int DC3Algorithm::getLCP(int i, int j) {
 void DC3Algorithm::testPrintDC3() {
 	std::cout << word_ << std::endl;
 	std::cout << "i |SA|LCP|up|down|next|\n";
-	for (int i = 0; i < wordLength_; ++i) {
+	for (std::int64_t i = 0; i < wordLength_; ++i) {
 		std::cout << i << " | ";
 		std::cout << sa_[i] << " | ";
 		std::cout << lcp_[i] << " | ";

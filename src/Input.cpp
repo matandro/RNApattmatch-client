@@ -32,7 +32,7 @@ int Input::getFastaSize(char fastaLetter) {
 
 Input::Input(const ProgramInput & programInput) :
 		errorStr_("Error: "), querySeq_(""), queryStructure_(""), queryGap_(), gapMaps_(), targetSequences_(), targetNames_(), sequencePreCount_(), bracketFind_(), compMatrix_(), baseToFasta_(), fastaToBase_(), maxGap_(
-				0), threadNo_(4), maxResults_(1000), dsCachePrefix_(""), cacheMode_(NONE), programInput_(programInput) {
+				0), threadNo_(4), maxResults_(1000), dsCachePrefix_(""), cacheMode_(NONE), programInput_(programInput), isStructured_(false) {
 	// mapping fasta name to rna alternatives
 	fastaToBase_.insert(std::pair<char, std::string>('A', "A"));
 	fastaToBase_.insert(std::pair<char, std::string>('G', "G"));
@@ -163,6 +163,7 @@ bool Input::ValidateQuery(std::string & argQuerySeq,
 	std::stack<int> bracket = std::stack<int>();
 	for (unsigned int i = 0; i < queryStructure_.length(); ++i) {
 		if (queryStructure_[i] == '(') {
+			isStructured_ = true;
 			bracket.push(i);
 		} else if (queryStructure_[i] == ')') {
 			if (bracket.empty()) {
@@ -393,7 +394,7 @@ const char * Input::ErrString() {
 	return errorStr_.c_str();
 }
 
-int Input::getTargetLength() {
+unsigned int Input::getTargetLength() {
 	return targetNames_.size();
 }
 
@@ -528,4 +529,8 @@ Gap * Input::getGapByGapNo(int gapNo) {
 		result = NULL;
 	}
 	return result;
+}
+
+bool Input::isStructured() {
+	return isStructured_;
 }

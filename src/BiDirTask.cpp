@@ -7,7 +7,7 @@
 
 #include <BiDirTask.h>
 
-BiDirTask::BiDirTask(unsigned int queryIndex, unsigned int targetIndex,
+BiDirTask::BiDirTask(unsigned int queryIndex, std::int64_t targetIndex,
 		unsigned int queryRevIndex, int revUnchecked, HairpinQuery & query,
 		bool forward) :
 		UniDirTask(queryIndex, targetIndex, query.getForwardGapNo()), forward_(
@@ -19,7 +19,7 @@ BiDirTask::BiDirTask(unsigned int queryIndex, unsigned int targetIndex,
 }
 
 BiDirTask::BiDirTask(LcpInterval & interval, unsigned int queryIndex,
-		unsigned int targetIndex, unsigned int queryRevIndex, int revUnchecked,
+		std::int64_t targetIndex, unsigned int queryRevIndex, int revUnchecked,
 		HairpinQuery & query, bool forward) :
 		UniDirTask(interval, queryIndex, targetIndex, query.getForwardGapNo()), forward_(
 				forward), queryRevIndex_(queryRevIndex), reverseGaps_(0), reverseGapNo_(
@@ -29,7 +29,7 @@ BiDirTask::BiDirTask(LcpInterval & interval, unsigned int queryIndex,
 	clearGaps(reverseGaps_, query.getReverseGapNo());
 }
 BiDirTask::BiDirTask(LcpInterval & interval, unsigned int queryIndex,
-		unsigned int targetIndex, unsigned int queryRevIndex, int revUnchecked,
+		std::int64_t targetIndex, unsigned int queryRevIndex, int revUnchecked,
 		HairpinQuery & query, char * forwardGaps, char * reverseGaps,
 		bool forward) :
 		UniDirTask(interval, queryIndex, targetIndex, query.getForwardGapNo(),
@@ -87,7 +87,7 @@ int BiDirTask::getQueryIndex(bool isForward) const {
 	else
 		return queryRevIndex_;
 }
-int BiDirTask::getTargetIndex() const {
+std::int64_t BiDirTask::getTargetIndex() const {
 	return targetIndex_;
 }
 void BiDirTask::setQueryIndex(int queryIndex, bool isForward) {
@@ -96,7 +96,7 @@ void BiDirTask::setQueryIndex(int queryIndex, bool isForward) {
 	else
 		queryRevIndex_ = queryIndex;
 }
-void BiDirTask::setTargetIndex(int targetIndex) {
+void BiDirTask::setTargetIndex(std::int64_t targetIndex) {
 	targetIndex_ = targetIndex;
 }
 char * BiDirTask::getGaps(bool isForward) {

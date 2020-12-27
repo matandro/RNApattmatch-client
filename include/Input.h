@@ -45,6 +45,7 @@ private:
 	std::string dsCachePrefix_;
 	CacheMode cacheMode_;
 	ProgramInput programInput_;
+	bool isStructured_;
 
 	bool ValidateQuery(std::string &, std::string &);
 	bool ValidateTargetFile(std::string &);
@@ -66,7 +67,7 @@ public:
 	bool Initiate(int, const char **);
 	const char * ErrString();
 	static const std::string Usage();
-	int getTargetLength();
+	unsigned int getTargetLength();
 	const std::string & getTargetName(int);
 	const std::string & getTargetSequence(int);
 	const std::string & getQuerySeq();
@@ -85,6 +86,7 @@ public:
 	Gap * getGapByGapNo(int gapNo);
 	const std::string& getCachePrefix();
 	CacheMode getCacheMode();
+	bool isStructured();
 };
 
 #endif /* INPUT_H_ */

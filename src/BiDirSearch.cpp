@@ -114,7 +114,6 @@ void BiDirSearch::breakSubQueries() {
 	intermediaryGaps_.push_back(gaps.size());
 	intermediaryLengths_.push_back(
 			std::make_pair(i - lastClose, sumGaps + i - lastClose));
-
 }
 
 long BiDirSearch::scoreQuery(const std::string & querySeq,
