@@ -1,14 +1,19 @@
-FROM ubuntu:20.10
+FROM alpine:3.12.3
 
-ENV DEBIAN_FRONTEND=noninteractive \
-    LANG=en_US.UTF-8 \
-    LC_ALL=C.UTF-8 \
-    LANGUAGE=en_US.UTF-8
+RUN apk update && \
+    apk add --no-cache autoconf build-base binutils cmake curl file gcc g++ git libgcc libtool linux-headers make musl-dev ninja tar unzip wget boost-dev
 
-RUN apt-get update && apt-get install -y bwa build-essential libz-dev libboost-all-dev
-
-COPY . /opt/bin/rnapattmatch/
-WORKDIR /opt/bin/rnapattmatch/
+COPY . /opt/rnapattmatch/
+WORKDIR /opt/rnapattmatch/
 RUN make
 
-CMD ["bin/rnapattmatch", "-h"]
+FROM alpine:3.12.3
+
+RUN apk update && apk add --no-cache boost
+RUN mkdir /opt/bin ; mkdir /data
+COPY --from=0 /opt/rnapattmatch/bin/RNAPattMatch /usr/bin/
+COPY --from=0 /opt/rnapattmatch/bin/RNAdsBuilder /usr/bin/
+
+WORKDIR /data
+
+CMD ["RNAPattMatch", "-h"]
