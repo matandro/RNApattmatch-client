@@ -163,6 +163,7 @@ bool Input::ValidateQuery(std::string & argQuerySeq,
 	std::stack<int> bracket = std::stack<int>();
 	for (unsigned int i = 0; i < queryStructure_.length(); ++i) {
 		if (queryStructure_[i] == '(') {
+			isStructured_ = false;
 			bracket.push(i);
 		} else if (queryStructure_[i] == ')') {
 			if (bracket.empty()) {
@@ -528,4 +529,8 @@ Gap * Input::getGapByGapNo(int gapNo) {
 		result = NULL;
 	}
 	return result;
+}
+
+bool Input::isStructured() {
+	return isStructured_;
 }

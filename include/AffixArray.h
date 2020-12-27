@@ -20,6 +20,7 @@ private:
 	std::int64_t * aflkR_;
 	Input & input_;
 	int targetNo_;
+	bool arrayUpdated_;
 
 	void calculateAflk();
 	void loadAflk();

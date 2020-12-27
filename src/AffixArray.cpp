@@ -17,7 +17,7 @@
 
 AffixArray::AffixArray(const char * word, Input & input, int targetNo) :
 		suffixArray_(word, false, input, targetNo), revPrefixArray_(word, true,
-				input, targetNo), input_(input), targetNo_(targetNo) {
+				input, targetNo), input_(input), targetNo_(targetNo), arrayUpdated_(false) {
 	aflkF_ = new std::int64_t[suffixArray_.getWordLength()];
 	aflkR_ = new std::int64_t[suffixArray_.getWordLength()];
 	for (std::int64_t i = 0; i < suffixArray_.getWordLength(); ++i) {
@@ -45,7 +45,8 @@ double AffixArray::RunAlgorithm() {
 	}
 
 	if (input_.getCacheMode() == Input::CacheMode::SAVE) {
-		calculateAflk();
+		// Currently removed. Calculating all is very time consuming. still saving after run to allow cached info
+		// calculateAflk();
 		Log::getInstance() << "Writing Affix information to "
 				<< getAfklFileName() << std::endl;
 		saveAflk();
@@ -63,6 +64,8 @@ std::string AffixArray::getAfklFileName() {
 }
 
 void AffixArray::saveAflk() {
+	if (!arrayUpdated_)
+		return;
 	std::ofstream aflkFile;
 	aflkFile.open(getAfklFileName(),
 			std::ios::out | std::ios::trunc | std::ios::binary);
@@ -76,6 +79,8 @@ void AffixArray::saveAflk() {
 void AffixArray::loadAflk() {
 	std::ifstream aflkFile;
 	aflkFile.open(getAfklFileName(), std::ios::binary);
+	if (aflkFile.fail())
+		return;
 	std::string line;
 	std::int64_t i = 0;
 	while (!aflkFile.eof()) {
@@ -301,6 +306,7 @@ LcpInterval AffixArray::getReversedInterval(LcpInterval & forwordInterval,
 		homeVar = home(forwordInterval.start, forwordInterval.end,
 				revPrefixArray_);
 		if (aflkR_[homeVar] == -2) {
+			arrayUpdated_ = true;
 			searchInReverse(revPrefixArray_, suffixArray_, forwordInterval,
 					aflkR_, aflkF_);
 		}
