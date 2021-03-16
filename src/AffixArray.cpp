@@ -27,8 +27,14 @@ AffixArray::AffixArray(const char * word, Input & input, int targetNo) :
 }
 
 AffixArray::~AffixArray() {
-	delete[] aflkF_;
-	delete[] aflkR_;
+	if (aflkF_ != NULL) {
+		delete[] aflkF_;
+		aflkF_ = NULL;
+	}
+	if (aflkR_ != NULL) {
+		delete[] aflkR_;
+		aflkR_ = NULL;
+	}
 }
 
 double AffixArray::RunAlgorithm() {

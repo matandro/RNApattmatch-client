@@ -243,6 +243,7 @@ double DC3Algorithm::RunAlgorithm() {
 		strcpy((char *) s, word_.c_str());
 		SA_IS(s, sa_, wordLength_ + 1, 256, 1);
 		delete[] s;
+		s = NULL;
 		// calc ISA and push SA to ignore empty string
 		sa_++;
 		saPushed_ = true;
@@ -252,6 +253,7 @@ double DC3Algorithm::RunAlgorithm() {
 			isa_[sa_[i]] = i;
 		CalcEnhancments(isa_);
 		delete[] isa_;
+		isa_ = NULL;
 	}
 
 	if (input_.getCacheMode() == Input::CacheMode::SAVE) {
@@ -273,7 +275,7 @@ DC3Algorithm::DC3Algorithm(const char * word, bool reverse, Input & input,
 	} else {
 		word_ = std::string(word);
 	}
-	word_ += 255;
+	word_ += (char)255;
 	wordLength_ = word_.size();
 	sa_ = new std::int64_t[wordLength_ + 1];
 	lcp_ = new std::int64_t[wordLength_];
@@ -298,11 +300,23 @@ DC3Algorithm::~DC3Algorithm() {
 	if (saPushed_) {
 		sa_--;
 	}
-	delete[] sa_;
-	delete[] lcp_;
-	delete[] cld_;
+	if (sa_ != NULL) {
+		delete[] sa_;
+		sa_ = NULL;
+	}
+	if (sa_ != NULL) {
+		delete[] lcp_;
+		lcp_ = NULL;
+	}
+	if (sa_ != NULL) {
+		delete[] cld_;
+		cld_ = NULL;
+	}
 #ifdef BW_ARRAY
-	delete[] bwt_;
+	if (bwt_ != NULL) {
+		delete[] bwt_;
+		bwt_ = NULL;
+	}
 #endif
 }
 

@@ -320,7 +320,7 @@ bool Input::Initiate(int argc, const char ** argv) {
 				++i;
 				if (Log::getInstance().initiate(std::string(">"), argv[i])
 						== false) {
-					errorStr_ == "Failed to initiate output file";
+					errorStr_ = "Failed to initiate output file";
 					errorStr_ += argv[i];
 				}
 				break;
@@ -377,9 +377,9 @@ bool Input::Initiate(int argc, const char ** argv) {
 }
 
 Input::~Input() {
-	if (sequencePreCount_ != 0) {
+	if (sequencePreCount_ != NULL) {
 		delete sequencePreCount_;
-		sequencePreCount_ = 0;
+		sequencePreCount_ = NULL;
 	}
 }
 

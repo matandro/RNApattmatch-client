@@ -6,6 +6,7 @@
  */
 
 #include <UniDirTask.h>
+#include <stdlib.h>
 
 UniDirTask::UniDirTask(LcpInterval & interval, unsigned int queryIndex,
 		std::int64_t targetIndex, unsigned int gapNo) :
@@ -39,7 +40,10 @@ UniDirTask::UniDirTask(const UniDirTask & other) :
 }
 
 UniDirTask::~UniDirTask() {
-	delete[] gaps_;
+	if (gaps_ != NULL) {
+		delete[] gaps_;
+		gaps_ = NULL;
+	}
 }
 
 UniDirTask & UniDirTask::operator=(const UniDirTask & other) {
@@ -50,8 +54,9 @@ UniDirTask & UniDirTask::operator=(const UniDirTask & other) {
 	queryIndex_ = other.queryIndex_;
 	targetIndex_ = other.targetIndex_;
 	gapNo_ = other.gapNo_;
-	if (gaps_ != 0) {
+	if (gaps_ != NULL) {
 		delete gaps_;
+		gaps_ = NULL;
 	}
 	gaps_ = new char[gapNo_];
 	copyGaps(gaps_, other.gaps_, gapNo_);

@@ -1,2 +1,6 @@
 bin
 .vscode
+*.fa
+*.SFA
+*.AFLK
+AE008691.1*

@@ -50,8 +50,10 @@ BiDirTask::BiDirTask(const BiDirTask & other) :
 }
 
 BiDirTask::~BiDirTask() {
-	if (reverseGaps_ != 0)
+	if (reverseGaps_ != NULL) {
 		delete[] reverseGaps_;
+		reverseGaps_ = NULL;
+	}
 }
 
 int BiDirTask::getForQueryIndex() const {
@@ -136,8 +138,9 @@ BiDirTask & BiDirTask::operator=(const BiDirTask & other) {
 	queryRevIndex_ = other.queryRevIndex_;
 	revUnchecked_ = other.revUnchecked_;
 	reverseGapNo_ = other.reverseGapNo_;
-	if (reverseGaps_ != 0) {
-		delete reverseGaps_;
+	if (reverseGaps_ != NULL) {
+		delete[] reverseGaps_;
+		reverseGaps_ = NULL;
 	}
 	reverseGaps_ = new char[reverseGapNo_];
 	copyGaps(reverseGaps_, other.reverseGaps_, reverseGapNo_);
