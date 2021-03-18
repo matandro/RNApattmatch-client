@@ -239,15 +239,15 @@ double DC3Algorithm::RunAlgorithm() {
 	if (input_.getCacheMode() == Input::CacheMode::LOAD) {
 		loadSfa();
 	} else {
-		unsigned char * s = new unsigned char[wordLength_];
+		unsigned char * s = new unsigned char[wordLength_ + 1];
 		strcpy((char *) s, word_.c_str());
 		SA_IS(s, sa_, wordLength_ + 1, 256, 1);
 		delete[] s;
 		s = NULL;
+		sa_[wordLength_] = wordLength_ - 1;
 		// calc ISA and push SA to ignore empty string
 		sa_++;
 		saPushed_ = true;
-		sa_[wordLength_] = wordLength_;
 		std::int64_t * isa_ = new std::int64_t[wordLength_];
 		for (std::int64_t i = 0; i < wordLength_; i++)
 			isa_[sa_[i]] = i;
@@ -304,11 +304,11 @@ DC3Algorithm::~DC3Algorithm() {
 		delete[] sa_;
 		sa_ = NULL;
 	}
-	if (sa_ != NULL) {
+	if (lcp_ != NULL) {
 		delete[] lcp_;
 		lcp_ = NULL;
 	}
-	if (sa_ != NULL) {
+	if (cld_ != NULL) {
 		delete[] cld_;
 		cld_ = NULL;
 	}
