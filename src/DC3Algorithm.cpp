@@ -15,6 +15,7 @@
 #include <stack>
 #include <Log.h>
 #include <fstream>
+#include <sstream>
 
 const unsigned char DC3Algorithm::mask[] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04,
 		0x02, 0x01 };
